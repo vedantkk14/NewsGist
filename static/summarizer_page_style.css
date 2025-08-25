@@ -320,7 +320,7 @@ body {
 
 .slider:before {
   position: absolute;
-  content: "☀️";
+  content: "☀";
   height: 26px;
   width: 26px;
   left: 3px;
@@ -855,6 +855,7 @@ input:checked + .slider:before {
 }
 
 /* Enhanced Summary Box with Scrolling */
+/* Enhanced Summary Box with Scrolling */
 .summary-box {
   padding: 1.5rem;
   background: var(--summary-bg);
@@ -865,7 +866,9 @@ input:checked + .slider:before {
   overflow: hidden;
   animation: summarySlide 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   transition: all 0.5s ease;
-  max-height: 300px; /* Set maximum height for the summary box */
+  max-height: 300px; /* Limit overall card height */
+  display: flex;
+  flex-direction: column;
 }
 
 @keyframes summarySlide {
@@ -891,27 +894,31 @@ input:checked + .slider:before {
 
 /* Scrollable Summary Content */
 .summary-content {
-  max-height: 220px; /* Adjust based on padding and desired height */
+  flex: 1;
+  max-height: 220px; /* Adjust for padding */
   overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 8px; /* Space for scrollbar */
-  margin-right: -8px; /* Offset to hide scrollbar track */
+  padding-right: 8px;  /* space for scrollbar */
+  margin-right: -8px;  /* hides scrollbar track gap */
+  color: var(--summary-text);
+  line-height: 1.7;
+  font-weight: 500;
+  transition: color 0.5s ease;
 }
 
-/* Custom Scrollbar for Summary */
+/* Custom Scrollbar (WebKit) */
 .summary-content::-webkit-scrollbar {
   width: 6px;
 }
 
 .summary-content::-webkit-scrollbar-track {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(102, 126, 234, 0.08);
   border-radius: 3px;
 }
 
 .summary-content::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #667eea, #764ba2);
   border-radius: 3px;
-  transition: background 0.3s ease;
 }
 
 .summary-content::-webkit-scrollbar-thumb:hover {
@@ -923,6 +930,7 @@ input:checked + .slider:before {
   scrollbar-width: thin;
   scrollbar-color: #667eea rgba(102, 126, 234, 0.1);
 }
+
 
 .summary-text {
   color: var(--summary-text);
@@ -1294,5 +1302,132 @@ input:checked + .slider:before {
   .summary-stats {
     flex-direction: column;
     gap: 0.5rem;
+  }
+}
+.summary-box {
+  padding: 1.5rem;
+  background: var(--summary-bg);
+  border: 2px solid var(--summary-border);
+  border-radius: 16px;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+  animation: summarySlide 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.5s ease;
+  max-width: 570px; /* set same as your screenshot */
+  max-height: 300px; /* controls total height */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-content {
+  max-height: 110px; /* reduce to leave space for stats/buttons */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;
+  margin-right: -8px;
+
+  scrollbar-width: thin;
+  scrollbar-color: #908f8f rgba(102, 126, 234, 0.1);
+}
+
+.summary-content::-webkit-scrollbar {
+  width: 6px;
+}
+.summary-content::-webkit-scrollbar-track {
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 3px;
+}
+.summary-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 3px;
+}
+.summary-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a6fd8, #6a42a0);
+}
+
+.summary-text {
+  color: var(--summary-text);
+  line-height: 1.7;
+  margin: 0;
+  font-weight: 500;
+  transition: color 0.5s ease;
+}
+
+.summary-stats {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.7rem;
+  padding: 0.4rem 0 0 0; /* keep tight like screenshot */
+  justify-content: center;
+  align-items: center;
+  font-family: inherit;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 12px;
+  border: 1px solid var(--summary-border);
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #667eea;
+  display: block;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--card-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 0.25rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  justify-content: center;
+  animation: buttonsSlideIn 0.5s ease 0.2s both;
+}
+
+.btn {
+  padding: 0.7rem 1.4rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-copy {
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  color: #4f46e5;
+}
+
+.btn-sentiment {
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  color: #d97706;
+}
+
+.btn-listen {
+  background: linear-gradient(135deg, #d4edda, #c3e6cb);
+  color: #155724;
+}
+
+@keyframes buttonsSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

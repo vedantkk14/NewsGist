@@ -464,7 +464,8 @@ def get_latest_news():
         params = {
             'lang': 'en',
             'max': 5,
-            'sortby': 'publishedAt'
+            'sortby': 'publishedAt',
+            'country': 'in'
         }
         
         data, error = fetch_gnews_data('top-headlines', params)
