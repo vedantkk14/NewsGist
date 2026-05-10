@@ -1,124 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>News Analysis App</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='summarizer_page_style.css') }}"
-    />
-  </head>
-  <body>
-    <!-- Header -->
-    <header class="header">
-      <div class="header-content">
-        <div class="nav-brand">
-          <div class="icon"></div>
-          <div>
-            <h1>News Analysis</h1>
-            <p>Intelligent text summarization & sentiment analysis</p>
-          </div>
-        </div>
-        <div class="nav-actions">
-          <div class="nav-status">
-            <span>Online</span>
-          </div>
-          <label class="theme-toggle">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-          </label>
-          <a href="/" class="nav-btn">🏠 Home</a>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>News Analysis App</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='summarizer_page_style.css') }}" />
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="nav-brand">
+        <div>
+          <h1>News Analysis</h1>
+          <p>Intelligent text summarization & sentiment analysis</p>
         </div>
       </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="main">
-      <div class="grid">
-        <!-- Input Section -->
-        <div class="card">
-          <div class="card-header">
-            <h2>Input Text</h2>
-            <p>Paste your news article or text here</p>
-          </div>
-          <div class="card-content">
-            <textarea
-              id="inputText"
-              class="textarea"
-              placeholder="Paste your news article, blog post, or any text you want to summarize..."
-            ></textarea>
-
-            <div class="controls">
-              <span id="charCount" class="char-count">0 characters</span>
-              <div class="buttons">
-                <button id="resetBtn" class="btn btn-secondary" disabled>
-                  🔄 Reset
-                </button>
-                <button id="summarizeBtn" class="btn btn-primary" disabled>
-                  ✨ Summarize
-                </button>
-              </div>
-            </div>
-          </div>
+      <div class="nav-actions">
+        <div class="nav-status">
+          <span>Online</span>
         </div>
+        <label class="theme-toggle">
+          <input type="checkbox" id="themeToggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </header>
 
-        <!-- Output Section -->
-        <div class="card">
-          <div class="card-header">
-            <h2>Summary</h2>
-            <p>Key points in 1-2 sentences</p>
-          </div>
-          <div class="card-content">
-            <!-- Move model selector OUTSIDE the summary box -->
-            <div class="model-toggle">
-              <div class="model-selector">
-                <button class="model-option active" data-model="default">
-                  📝 Brief Summary
-                </button>
-                <button class="model-option" data-model="pegasus">
-                  🎯 One-Liner
-                </button>
-              </div>
-            </div>
+  <!-- Main Content -->
+  <main class="main">
+    <div class="page-header">
+      <a href="/" class="back-link">← Back to Dashboard</a>
+    </div>
+    <div class="grid">
+      <!-- Input Section -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Input Text</h2>
+          <p>Paste your news article or text here</p>
+        </div>
+        <div class="card-content">
+          <textarea id="inputText" class="textarea"
+            placeholder="Paste your news article, blog post, or any text you want to summarize..."></textarea>
 
-            <!-- Output area: only summary inside the card -->
-            <div id="outputArea" class="output-area">
-              <div class="summary-box">
-                <div class="summary-content">
-                  <!-- Summary will be injected here by JS -->
-                  <p class="summary-text"></p>
-                </div>
-              </div>
-              <div class="empty-state">
-                <div class="empty-icon">📄</div>
-                <p>Your summary will appear here</p>
-              </div>
+          <div class="controls">
+            <span id="charCount" class="char-count">0 characters</span>
+            <div class="buttons">
+              <button id="resetBtn" class="btn btn-secondary" disabled>
+                🔄 Reset
+              </button>
+              <button id="summarizeBtn" class="btn btn-primary" disabled>
+                ✨ Summarize
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Features -->
-      <div class="features">
-        <div class="feature-card">
-          <div class="feature-icon blue">✨</div>
-          <h3>Smart Analysis</h3>
-          <p>Advanced algorithms identify key sentences and main ideas</p>
+      <!-- Output Section -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Summary</h2>
+          <p>Key points in 1-2 sentences</p>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon green">📄</div>
-          <h3>Concise Output</h3>
-          <p>Get the essence of any text in just 1-2 clear sentences</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon purple">💭</div>
-          <h3>Sentiment Analysis</h3>
-          <p>Understand the emotional tone and sentiment of your text</p>
+        <div class="card-content">
+          <!-- Move model selector OUTSIDE the summary box -->
+          <div class="model-toggle">
+            <div class="model-selector">
+              <button class="model-option active" data-model="default">
+                📝 Brief Summary
+              </button>
+              <button class="model-option" data-model="pegasus">
+                🎯 One-Liner
+              </button>
+            </div>
+          </div>
+
+          <!-- Output area: only summary inside the card -->
+          <div id="outputArea" class="output-area">
+            <div class="summary-box">
+              <div class="summary-content">
+                <!-- Summary will be injected here by JS -->
+                <p class="summary-text"></p>
+              </div>
+            </div>
+            <div class="empty-state">
+              <div class="empty-icon">📄</div>
+              <p>Your summary will appear here</p>
+            </div>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
 
-    <script src="{{ url_for('static', filename='summarizer_page_script.js') }}"></script>
-  </body>
+    <!-- Features -->
+    <div class="features">
+      <div class="feature-card">
+        <h3>Smart Analysis</h3>
+        <p>Advanced algorithms identify key sentences and main ideas</p>
+      </div>
+      <div class="feature-card">
+        <h3>Concise Output</h3>
+        <p>Get the essence of any text in just 1-2 clear sentences</p>
+      </div>
+      <div class="feature-card">
+        <h3>Sentiment Analysis</h3>
+        <p>Understand the emotional tone and sentiment of your text</p>
+      </div>
+    </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='summarizer_page_script.js') }}"></script>
+</body>
+
 </html>

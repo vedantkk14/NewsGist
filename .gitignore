@@ -12,3 +12,4 @@ myenv_tf/
 
 environment.yml/
 
+.env

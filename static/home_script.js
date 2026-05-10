@@ -1,168 +1,97 @@
-// Theme Toggle Functionality
-const themeToggle = document.getElementById("themeToggle");
-const body = document.body;
-
-// Always default to 'light' theme on page load
-body.setAttribute("data-theme", "light");
-themeToggle.checked = true;
-localStorage.setItem("theme", "light");
-
-themeToggle.addEventListener("change", function () {
-  if (this.checked) {
-    body.setAttribute("data-theme", "light");
-    localStorage.setItem("theme", "light");
-  } else {
-    body.removeAttribute("data-theme");
-    localStorage.setItem("theme", "dark");
-  }
-});
-
-// Alternative: Use NewsAPI.org (free tier available)
-// Sign up at https://newsapi.org/ and replace 'YOUR_NEWSAPI_KEY' with your actual key
-// const NEWS_API_KEY = 'YOUR_NEWSAPI_KEY';
-// const NEWSAPI_URL = `https://newsapi.org/v2/top-headlines?country=us&pageSize=5&apiKey=${NEWS_API_KEY}`;
-// const API_URL = `https://api.allorigins.win/raw?url=${encodeURIComponent(NEWSAPI_URL)}`;
-
-// Using GNews with CORS proxy
-const API_KEY = "133bb93beaeb9f5cfc91ea8efee7b0c4";
-const GNEWS_URL = `https://gnews.io/api/v4/top-headlines?token=${API_KEY}&lang=en&max=5`;
-const API_URL = `https://api.allorigins.win/raw?url=${encodeURIComponent(
-  GNEWS_URL
-)}`;
-
-let newsCache = null;
-let lastFetchTime = 0;
-const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes
-
-async function fetchNews() {
-  const now = Date.now();
-
-  // Use cache if available and not expired
-  if (newsCache && now - lastFetchTime < CACHE_DURATION) {
-    return newsCache;
-  }
-
-  try {
-    const response = await fetch(API_URL);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('themeToggle');
+    const newsContainer = document.getElementById('newsContainer');
+    const refreshBtn = document.getElementById('refreshNews');
+    
+    // ==========================================
+    // Theme Management
+    // ==========================================
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-theme');
+    } else {
+        document.body.classList.remove('dark-theme');
     }
-    const data = await response.json();
 
-    // Cache the results
-    newsCache = data;
-    lastFetchTime = now;
+    themeToggle.addEventListener('click', () => {
+        const isDark = document.body.classList.toggle('dark-theme');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
 
-    return data;
-  } catch (error) {
-    console.error("Error fetching news:", error);
-    throw error;
-  }
-}
+    // ==========================================
+    // News Fetching & Display
+    // ==========================================
+    function showSkeleton() {
+        newsContainer.innerHTML = `
+            <div class="skeleton-loader">
+                <div class="skeleton-line title"></div>
+                <div class="skeleton-line text"></div>
+                <div class="skeleton-line text short"></div>
+            </div>
+            <div class="skeleton-loader" style="margin-top: 2rem">
+                <div class="skeleton-line title"></div>
+                <div class="skeleton-line text"></div>
+                <div class="skeleton-line text short"></div>
+            </div>
+        `;
+    }
 
-function formatTimeAgo(dateString) {
-  const now = new Date();
-  const publishTime = new Date(dateString);
-  const diffInMinutes = Math.floor((now - publishTime) / (1000 * 60));
+    function formatTime(dateStr) {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diff = Math.floor((now - date) / 1000 / 60); // minutes
+        
+        if (diff < 60) return `${diff}m ago`;
+        if (diff < 1440) return `${Math.floor(diff/60)}h ago`;
+        return date.toLocaleDateString();
+    }
 
-  if (diffInMinutes < 1) return "Just now";
-  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-
-  const diffInHours = Math.floor(diffInMinutes / 60);
-  if (diffInHours < 24) return `${diffInHours}h ago`;
-
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 7) return `${diffInDays}d ago`;
-
-  return publishTime.toLocaleDateString();
-}
-
-function displayNews(articles) {
-  const container = document.getElementById("newsContainer");
-
-  if (!articles || articles.length === 0) {
-    container.innerHTML = `
-                    <div class="error-message">
-                        <div class="error-icon">📰</div>
-                        <h3>No news articles available</h3>
-                        <p>Unable to fetch news articles at the moment. Please try again later.</p>
-                    </div>
-                `;
-    return;
-  }
-
-  const newsHTML = articles
-    .map((article) => {
-      const timeAgo = formatTimeAgo(article.publishedAt);
-      const source = article.source?.name || "Unknown Source";
-
-      return `
-                    <div class="news-item">
-                        <h3><a href="${article.url}" target="_blank" rel="noopener noreferrer">${article.title}</a></h3>
-                        <div class="news-meta">
-                            <span class="news-source">${source}</span>
-                            <span class="news-time">🕐 ${timeAgo}</span>
-                        </div>
-                    </div>
-                `;
-    })
-    .join("");
-
-  container.innerHTML = `<div class="news-grid">${newsHTML}</div>`;
-}
-
-function displayError() {
-  const container = document.getElementById("newsContainer");
-  container.innerHTML = `
-                <div class="error-message">
-                    <div class="error-icon">⚠️</div>
-                    <h3>Unable to fetch news</h3>
-                    <p>Unable to fetch news at the moment. Please try again later.</p>
+    async function loadNews() {
+        showSkeleton();
+        if (refreshBtn) refreshBtn.style.opacity = '0.5';
+        
+        try {
+            const response = await fetch('/api/news');
+            if (!response.ok) throw new Error('Failed to fetch news');
+            
+            const data = await response.json();
+            displayNews(data.articles);
+        } catch (error) {
+            console.error('News Error:', error);
+            newsContainer.innerHTML = `
+                <div class="error-msg" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                    <p>Unable to load live feed. Please try again later.</p>
                 </div>
             `;
-}
+        } finally {
+            if (refreshBtn) refreshBtn.style.opacity = '1';
+        }
+    }
 
-function showLoading() {
-  const container = document.getElementById("newsContainer");
-  container.innerHTML = `
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
+    function displayNews(articles) {
+        if (!articles || articles.length === 0) {
+            newsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No news available at the moment.</p>';
+            return;
+        }
+
+        newsContainer.innerHTML = articles.map(article => `
+            <div class="news-item" style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+                <h4 style="font-family: var(--font-serif); font-size: 1.1rem; margin-bottom: 0.5rem;">
+                    <a href="${article.url}" target="_blank" style="color: var(--text-primary);">${article.title}</a>
+                </h4>
+                <div style="display: flex; gap: 12px; font-size: 0.8rem; color: var(--text-muted);">
+                    <span>${article.source.name}</span>
+                    <span>•</span>
+                    <span>${formatTime(article.publishedAt)}</span>
                 </div>
-            `;
-}
+            </div>
+        `).join('');
+    }
 
-async function loadNews() {
-  const refreshBtn = document.getElementById("refreshNews");
-  const refreshIcon = refreshBtn.querySelector(".refresh-icon");
+    // Initial Load
+    loadNews();
 
-  try {
-    refreshBtn.classList.add("loading");
-    refreshBtn.disabled = true;
-    showLoading();
-
-    const data = await fetchNews();
-    displayNews(data.articles);
-  } catch (error) {
-    console.error("Error loading news:", error);
-    displayError();
-  } finally {
-    refreshBtn.classList.remove("loading");
-    refreshBtn.disabled = false;
-  }
-}
-
-// Event Listeners
-document.getElementById("refreshNews").addEventListener("click", () => {
-  // Clear cache to force fresh fetch
-  newsCache = null;
-  lastFetchTime = 0;
-  loadNews();
+    // Refresh Event
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', loadNews);
+    }
 });
-
-// Load news on page load
-document.addEventListener("DOMContentLoaded", loadNews);
-
-// Auto-refresh news every 10 minutes
-setInterval(() => {
-  loadNews();
-}, 10 * 60 * 1000);

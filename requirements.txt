@@ -8,3 +8,4 @@ tokenizers
 hf_xet
 scikit-learn
 accelerate
+python-dotenv

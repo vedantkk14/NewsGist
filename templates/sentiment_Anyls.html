@@ -1,134 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sentiment Analysis Results</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='sentiment_Anyls_style.css') }}"
-    />
-  </head>
-  <body>
-    <!-- Header -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Report | NewsGist</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='sentiment_Anyls_style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .main {
+            max-width: 1100px;
+            padding: 2rem;
+        }
+
+        .dual-pane {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 2rem;
+            margin-top: 1rem;
+            animation: slideIn 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Document Pane */
+        .document-pane {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .doc-header {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .doc-header h2 {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            color: var(--text-primary);
+        }
+
+        .summary-body {
+            font-family: var(--font-serif);
+            font-size: 1.25rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            flex-grow: 1;
+        }
+
+        /* Analysis Sidebar */
+        .analysis-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .analysis-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sidebar-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+            display: block;
+        }
+
+        .sentiment-result-box {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .sentiment-result-box.positive { background: var(--sentiment-pos-bg); color: var(--sentiment-pos-text); }
+        .sentiment-result-box.negative { background: var(--sentiment-neg-bg); color: var(--sentiment-neg-text); }
+        .sentiment-result-box.neutral { background: var(--sentiment-neu-bg); color: var(--sentiment-neu-text); }
+
+        .confidence-meter {
+            height: 8px;
+            background: var(--bg-subtle);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--text-primary);
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+
+        .confidence-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* Nav & Actions */
+        .page-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: auto;
+            padding-top: 2rem;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 900px) {
+            .dual-pane { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
     <header class="header">
-      <div class="header-content">
-        <div class="nav-brand">
-          <div class="icon"></div>
-          <div>
-            <h1>Sentiment Analysis</h1>
-            <p>Understand the emotional tone of your text</p>
-          </div>
+        <div class="header-content">
+            <div class="nav-brand">
+                <div class="icon"></div>
+                <div>
+                    <h1>NewsGist</h1>
+                    <p>Analysis Report</p>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <a href="{{ url_for('summarizer_page') }}" class="nav-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </a>
+                <label class="theme-toggle">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
         </div>
-        <div class="nav-actions">
-          <label class="theme-toggle" for="themeToggle" title="Toggle theme">
-            <input type="checkbox" id="themeToggle">
-            <span class="toggle-slider"></span>
-          </label>
-          <a href="/summarizer" class="nav-btn">📄 Back to Summarizer</a>
-          <a href="/" class="nav-btn">🏠 Home</a>
-        </div>
-      </div>
     </header>
 
-    <!-- Main Content -->
     <main class="main">
-      {% if error %}
-      <div class="result-card">
-        <div class="card-content">
-          <div class="error-card">
-            <div class="error-icon">❌</div>
-            <h3>Analysis Error</h3>
+        {% if error %}
+        <div class="analysis-card" style="text-align: center;">
+            <i class="fa-solid fa-circle-exclamation" style="font-size: 3rem; color: #d32f2f; margin-bottom: 1rem;"></i>
+            <h3>Error</h3>
             <p>{{ error }}</p>
-            <div class="actions">
-              <a href="/summarizer" class="btn btn-primary"> 🔙 Try Again </a>
-            </div>
-          </div>
         </div>
-      </div>
-      {% else %}
-      <!-- Original Text Section -->
-      {% if summary_text %}
-      <div class="result-card">
-        <div class="card-header">
-          <h2>📝 Analyzed Text</h2>
-        </div>
-        <div class="card-content">
-          <div class="text-section">
-            <h3>Summary Text</h3>
-            <div class="text-content">{{ summary_text }}</div>
-          </div>
-        </div>
-      </div>
-      {% endif %}
-
-      <!-- Sentiment Results -->
-      {% if sentiment %}
-      <div class="result-card">
-        <div class="card-header">
-          <h2>🔍 Sentiment Analysis Results</h2>
-        </div>
-        <div class="card-content">
-          <div class="sentiment-result">
-            <!-- Sentiment Classification -->
-            <div class="sentiment-card {{ sentiment.lower() }}">
-              <span class="sentiment-icon">
-                {% if sentiment == 'Positive' %} 😊 {% elif sentiment ==
-                'Negative' %} 😞 {% else %} 😐 {% endif %}
-              </span>
-              <div class="sentiment-label">{{ sentiment }}</div>
-              <p>Detected sentiment classification</p>
-            </div>
-
-            <!-- Confidence Score -->
-            <div class="confidence-card">
-              <div
-                class="confidence-circle"
-                style="--percentage: {{ confidence }}%;"
-              >
-                <div class="confidence-value">
-                  {{ "%.1f"|format(confidence) }}%
+        {% else %}
+        
+        <div class="dual-pane">
+            <!-- Left: Document View -->
+            <div class="document-pane">
+                <div class="doc-header">
+                    <h2>Summary Text</h2>
                 </div>
-              </div>
-              <div class="confidence-label">Confidence Score</div>
+                <div class="summary-body">
+                    {{ summary_text }}
+                </div>
+                <div class="page-actions">
+                    <button onclick="copyDoc()" class="btn btn-secondary" id="copyBtn">
+                        <i class="fa-regular fa-copy"></i> Copy
+                    </button>
+                    <a href="{{ url_for('summarizer_page') }}" class="btn btn-primary">
+                        <i class="fa-solid fa-rotate-right"></i> Reset
+                    </a>
+                </div>
             </div>
-          </div>
 
-          <!-- Additional Details -->
-          {% if raw_label %}
-          <div class="text-section">
-            <h3>Technical Details</h3>
-            <div class="text-content">
-              <strong>Raw Model Output:</strong> {{ raw_label }}<br />
-              <strong>Confidence Level:</strong> {{ "%.2f"|format(confidence)
-              }}%<br />
-              <strong>Text Length:</strong> {{ summary_text|length if
-              summary_text else 0 }} characters
+            <!-- Right: Analysis sidebar -->
+            <div class="analysis-sidebar">
+                <div class="analysis-card">
+                    <span class="sidebar-label">Tone Detection</span>
+                    <div class="sentiment-result-box {{ sentiment|lower }}">
+                        {% if sentiment|lower == 'positive' %}<i class="fa-solid fa-circle-check"></i>
+                        {% elif sentiment|lower == 'negative' %}<i class="fa-solid fa-circle-exclamation"></i>
+                        {% else %}<i class="fa-solid fa-circle-minus"></i>
+                        {% endif %}
+                        {{ sentiment }}
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <span class="sidebar-label">Confidence Score</span>
+                    <div class="confidence-text">{{ confidence|round(1) }}% Certainty</div>
+                    <div class="confidence-meter">
+                        <div class="confidence-fill" style="width: {{ confidence }}%"></div>
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                        Based on linguistic patterns and emotional intensity detected in the text.
+                    </p>
+                </div>
+                
+                <div class="analysis-card" style="background: var(--bg-subtle);">
+                    <span class="sidebar-label">AI Insights</span>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary);">
+                        The text exhibits a <strong>{{ sentiment|lower }}</strong> narrative structure with focused vocabulary.
+                    </p>
+                </div>
             </div>
-          </div>
-          {% endif %}
-
-          <!-- Action Buttons -->
-          <div class="actions">
-            <a href="/summarizer" class="btn btn-primary">
-              📄 Analyze New Text
-            </a>
-            <button
-              onclick="copyResults()"
-              class="btn btn-secondary"
-              id="copyBtn"
-            >
-              📋 Copy Results
-            </button>
-            <button onclick="shareResults()" class="btn btn-secondary">
-              🔗 Share Results
-            </button>
-          </div>
         </div>
-      </div>
-      {% endif %} {% endif %}
+        
+        {% endif %}
     </main>
 
-    <script src="{{ url_for('static', filename='sentiment_Anyls_script.js') }}"></script>
-  </body>
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlTheme = urlParams.get('theme');
+        
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeToggle.checked = true;
+            } else {
+                document.body.classList.remove('dark-theme');
+                themeToggle.checked = false;
+            }
+            localStorage.setItem('news-analyzer-theme', theme);
+        }
+
+        const savedTheme = urlTheme || localStorage.getItem('news-analyzer-theme') || 'light';
+        setTheme(savedTheme);
+
+        themeToggle.addEventListener('change', () => {
+            setTheme(themeToggle.checked ? 'dark' : 'light');
+        });
+
+        function copyDoc() {
+            const text = `{{ summary_text|replace("'", "\\'") }}`;
+            const btn = document.getElementById('copyBtn');
+            navigator.clipboard.writeText(text).then(() => {
+                const original = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                setTimeout(() => { btn.innerHTML = original; }, 2000);
+            });
+        }
+    </script>
+</body>
 </html>

@@ -3,125 +3,107 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>News Analysis Hub</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='home_style.css') }}"
-    />
+    <title>News Analysis Hub | Editorial Intelligence</title>
+    
+    <!-- Fonts: Serif for Editorial Headlines, Sans-Serif for Tech UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='home_style.css') }}" />
   </head>
-  <body>
-    <!-- Header -->
-    <header class="header">
-      <div class="header-content">
-        <div class="nav-brand">
-          <div class="icon"></div>
-          <div>
-            <h1>News Analysis Hub</h1>
-            <p>AI-powered text intelligence platform</p>
+  <body class="light-theme">
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="brand">
+          <div class="brand-mark"></div>
+          <span class="brand-name">News Analysis Hub</span>
+        </div>
+        
+        <div class="nav-controls">
+          <div class="status-pill">
+            <span class="pulse"></span> System Online
           </div>
-        </div>
-        <div class="nav-actions">
-          <div class="nav-status">
-            <span>System Online</span>
-          </div>
-          <label class="theme-toggle">
-            <input type="checkbox" id="themeToggle" />
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-      <div class="hero-content">
-        <h1>Transform Text Into Insights</h1>
-        <p>
-          Harness the power of advanced AI to instantly summarize news articles,
-          research papers, and any text content. Get key insights in seconds,
-          not minutes.
-        </p>
-
-        <div class="cta-buttons">
-          <a href="/summarizer" class="cta-btn cta-primary">
-            ✨ Start Summarizing
-          </a>
-          <a href="#features" class="cta-btn cta-secondary"> 📖 Learn More </a>
-        </div>
-
-        <div class="stats-section">
-          <div class="stats-grid">
-            <div class="stat-item">
-              <div class="stat-number">50K+</div>
-              <div class="stat-label">Articles Processed</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-number">95%</div>
-              <div class="stat-label">Accuracy Rate</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-number">2.3s</div>
-              <div class="stat-label">Average Processing Time</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-number">24/7</div>
-              <div class="stat-label">Availability</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Latest News Section -->
-      <section class="news-section">
-        <div class="news-header">
-          <h2>📰 Latest News</h2>
-          <button class="refresh-btn" id="refreshNews">
-            <span class="refresh-icon">🔄</span>
-            <span>Refresh</span>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle Theme">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
           </button>
         </div>
-        <div class="news-content">
-          <div id="newsContainer">
-            <div class="loading-spinner">
-              <div class="spinner"></div>
+      </div>
+    </nav>
+
+    <main class="main-container">
+      <!-- Hero Section -->
+      <section class="editorial-hero">
+        <div class="hero-badge">AI-Powered Intelligence</div>
+        <h1 class="hero-title">Cut through the noise.<br><em>Extract the narrative.</em></h1>
+        <p class="hero-subtitle">
+          Transform lengthy articles, research papers, and breaking news into concise, actionable insights in milliseconds using state-of-the-art transformer models.
+        </p>
+        <div class="hero-actions">
+          <a href="/summarizer" class="btn btn-primary">Start Summarizing</a>
+          <a href="#features" class="btn btn-secondary">Explore Features</a>
+        </div>
+      </section>
+
+      <!-- The Bento Grid (Combines Stats & Features creatively) -->
+      <section id="features" class="bento-grid">
+        
+        <!-- Large Feature Box -->
+        <div class="bento-card span-2 feature-ai">
+          <div class="card-content">
+            <span class="card-icon">🧠</span>
+            <h2>Contextual Understanding</h2>
+            <p>Our fine-tuned BART models read between the lines, ensuring human-quality summaries that retain the core journalistic integrity of the original text.</p>
+          </div>
+          <div class="card-decoration ai-pattern"></div>
+        </div>
+
+        <!-- Stat Box 1 -->
+        <div class="bento-card stat-card accent-dark">
+          <div class="stat-value">2.3s</div>
+          <div class="stat-label">Avg. Processing Time</div>
+        </div>
+
+        <!-- Stat Box 2 -->
+        <div class="bento-card stat-card accent-light">
+          <div class="stat-value">95%</div>
+          <div class="stat-label">Extraction Accuracy</div>
+        </div>
+
+        <!-- Feature Box -->
+        <div class="bento-card feature-speed">
+          <span class="card-icon">⚡</span>
+          <h3>Lightning Fast</h3>
+          <p>Optimized infrastructure delivers instant results, keeping you ahead of the news cycle.</p>
+        </div>
+
+        <!-- Feature Box -->
+        <div class="bento-card feature-keys">
+          <span class="card-icon">🎯</span>
+          <h3>Smart Extraction</h3>
+          <p>Automatically flags key entities, dates, and critical data points.</p>
+        </div>
+
+        <!-- Live News Feed Box -->
+        <div class="bento-card span-2 news-feed-card">
+          <div class="news-header">
+            <h3>Live Analysis Feed</h3>
+            <button id="refreshNews" class="btn-icon" aria-label="Refresh">🔄</button>
+          </div>
+          <div id="newsContainer" class="news-list">
+            <!-- Loading state -->
+            <div class="skeleton-loader">
+              <div class="skeleton-line title"></div>
+              <div class="skeleton-line text"></div>
+              <div class="skeleton-line text short"></div>
             </div>
           </div>
         </div>
+
       </section>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="hero">
-      <div class="features-grid">
-        <div class="feature-card">
-          <div class="feature-icon blue">🧠</div>
-          <h3>Advanced AI Technology</h3>
-          <p>
-            Powered by state-of-the-art BART transformer models, delivering
-            human-quality summaries with deep contextual understanding.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon green">⚡</div>
-          <h3>Lightning Fast Processing</h3>
-          <p>
-            Get comprehensive summaries in under 3 seconds. Our optimized
-            infrastructure ensures rapid response times for any text length.
-          </p>
-        </div>
-
-        <div class="feature-card">
-          <div class="feature-icon purple">🎯</div>
-          <h3>Smart Key Extraction</h3>
-          <p>
-            Automatically identifies and highlights the most important
-            information, saving you time while ensuring you never miss critical
-            details.
-          </p>
-        </div>
-      </div>
-    </section>
+    </main>
 
     <script src="{{ url_for('static', filename='home_script.js') }}"></script>
   </body>

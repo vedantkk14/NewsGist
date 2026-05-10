@@ -1,9 +1,13 @@
 from flask import Flask, render_template
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
-API_KEY = "133bb93beaeb9f5cfc91ea8efee7b0c4"
+API_KEY = os.getenv("GNEWS_API_KEY")
 BASE_URL = "https://gnews.io/api/v4/top-headlines"
 
 
